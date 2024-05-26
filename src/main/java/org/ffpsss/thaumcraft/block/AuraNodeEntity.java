@@ -10,7 +10,6 @@ import java.util.Random;
 import org.ffpsss.sml.api.common.SMLRegistry;
 import org.ffpsss.sml.magic.Aspect;
 import org.ffpsss.sml.magic.AspectStorage;
-import org.ffpsss.thaumcraft.ThaumcraftReborn;
 import org.ffpsss.thaumcraft.data.AuraNodeType;
 
 import net.minecraft.block.BlockState;
@@ -23,6 +22,7 @@ import net.minecraft.tag.BiomeTags;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.RegistryEntry;
+import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
 
@@ -90,18 +90,17 @@ public class AuraNodeEntity extends BlockEntity implements AspectStorage {
     private void generateNode() {
         selectNodeType();
         type.randomSubType();
-        Map<String, Aspect> possibleAspects = getPossibleAspects(), afterEditingAspects = new HashMap<>();
-        int totalVis = 0, aspectTotal = 0;
+        maxRegenPerAspect = new Random().nextInt(50);
+        Map<String, Aspect> possibleAspects = getPossibleAspects();
+        int totalVis = 0;
         for (Map.Entry<String, Aspect> aspect : possibleAspects.entrySet()) {
             if (type.auraNodeType == "tainted") aspect.getValue().amount = (aspect.getValue().amount / 4) * 3;
             totalVis += aspect.getValue().amount;
-            aspectTotal++;
-            afterEditingAspects.put(aspect.getKey(), aspect.getValue());
         }
-        maxRegenPerAspect = new Random().nextInt(50);
-        int perAspect = totalVis / aspectTotal;
-        for (Map.Entry<String, Aspect> aspect : afterEditingAspects.entrySet()) {
-            aspect.getValue().amount = perAspect;
+        for (Map.Entry<String, Aspect> aspect : possibleAspects.entrySet()) {
+            if (type.auraNodeType == "tainted") aspect.getValue().amount = (aspect.getValue().amount / 4) * 3;
+            aspect.getValue().amount = (totalVis / possibleAspects.size());
+            if (aspect.getValue().amount > maxRegenPerAspect) maxRegenPerAspect = aspect.getValue().amount;
             aspects.put(aspect.getKey(), aspect.getValue());
         }
     }
@@ -136,44 +135,72 @@ public class AuraNodeEntity extends BlockEntity implements AspectStorage {
     }
     public static boolean randomize(int falsePossibilities, int truePossibilities) {
         List<Boolean> res = new ArrayList<>();
-        ThaumcraftReborn.LOGGER.info("CALLED RANDOMIZE");
         for (int i = 0; i < falsePossibilities; i++) res.add(false);
         for (int i = 0; i < truePossibilities; i++) res.add(true);
         return res.get(new Random().nextInt(res.size()));
+    }
+
+    private boolean isSwampBiome(RegistryEntry<Biome> biome) {
+        return (biome.matchesKey(BiomeKeys.SWAMP) || biome.matchesKey(BiomeKeys.MANGROVE_SWAMP));
+    }
+    private boolean isFrozenOceanBiome(RegistryEntry<Biome> biome) {
+        return (biome.matchesKey(BiomeKeys.COLD_OCEAN) || biome.matchesKey(BiomeKeys.FROZEN_OCEAN) ||
+                biome.matchesKey(BiomeKeys.DEEP_COLD_OCEAN) || biome.matchesKey(BiomeKeys.DEEP_FROZEN_OCEAN));
+    }
+    private boolean isFrozenBiome(RegistryEntry<Biome> biome) {
+        return (isFrozenOceanBiome(biome) || biome.isIn(BiomeTags.IS_TAIGA) || biome.matchesKey(BiomeKeys.SNOWY_BEACH) || 
+                biome.matchesKey(BiomeKeys.SNOWY_PLAINS) || biome.matchesKey(BiomeKeys.ICE_SPIKES) || biome.matchesKey(BiomeKeys.FROZEN_RIVER));
+    }
+    private boolean isPlainsBiome(RegistryEntry<Biome> biome) {
+        return (biome.matchesKey(BiomeKeys.PLAINS) || biome.matchesKey(BiomeKeys.SNOWY_PLAINS) || biome.matchesKey(BiomeKeys.SUNFLOWER_PLAINS));
     }
     private Map<String, Aspect> getPossibleAspects() {
         Map<String, Aspect> result = new HashMap<>();
         RegistryEntry<Biome> biome = world.getBiome(pos);
 
         // TODO: when magical forest will be created tag it with BiomeTags.IS_FOREST
-        if (biome.isIn(BiomeTags.IS_JUNGLE) || biome.isIn(BiomeTags.IS_BADLANDS) || biome.isIn(BiomeTags.IS_SAVANNA)) 
+        if ((biome.isIn(BiomeTags.IS_JUNGLE) || biome.isIn(BiomeTags.IS_BADLANDS) || biome.isIn(BiomeTags.IS_SAVANNA)) && 
+            randomize(1, 2))
             result.put("ignis", takeAspect("ignis", 100));
-        if (biome.isIn(BiomeTags.IS_NETHER)) result.put("ignis", takeAspect("ignis", 120));
-        if (biome == BiomeKeys.MUSHROOM_FIELDS) result.put("ordo", takeAspect("ordo", 140));
-        if (biome.isIn(BiomeTags.IS_MOUNTAIN) || isFrozenOceanBiome(biome) || biome == BiomeKeys.FROZEN_RIVER ||
-             biome == BiomeKeys.SNOWY_PLAINS || biome == BiomeKeys.ICE_SPIKES || biome.isIn(BiomeTags.IS_TAIGA) || biome == BiomeKeys.SNOWY_BEACH || 
-             biome.isIn(BiomeTags.IS_JUNGLE)) result.put("ordo", takeAspect("ordo", 100));
-        if (biome.isIn(BiomeTags.IS_BEACH) || biome == BiomeKeys.DESERT || biome.isIn(BiomeTags.IS_BADLANDS)) result.put("terra", takeAspect("terra", 80));
-        if (biome.isIn(BiomeTags.IS_FOREST)) result.put("terra", takeAspect("terra", 120));
-        if (isSwampBiome(biome)) result.put("perditio", takeAspect("perditio", 120));
-        if (biome == BiomeKeys.SNOWY_PLAINS || biome.isIn(BiomeTags.IS_SAVANNA) || biome.isIn(BiomeTags.IS_HILL) || biome.isIn(BiomeTags.IS_BADLANDS) || 
-             biome.isIn(BiomeTags.IS_NETHER) || biome == BiomeKeys.DESERT) result.put("perditio", takeAspect("perditio", 80)); // tainted land
-        if (biome.isIn(BiomeTags.IS_HILL)) result.put("aer", takeAspect("aer", 120));
-        if (biome.isIn(BiomeTags.IS_MOUNTAIN)) result.put("aer", takeAspect("aer", 100));
-        if (biome.isIn(BiomeTags.IS_SAVANNA) || isPlainsBiome(biome)) result.put("aer", takeAspect("aer", 80));
-        if (biome.isIn(BiomeTags.IS_JUNGLE) || biome.matchesKey(BiomeKeys.LUSH_CAVES)) result.put("herba", takeAspect("herba", 100));
-        if (biome.isIn(BiomeTags.IS_RIVER)) result.put("aqua", takeAspect("aqua", 100));
-        if (isSwampBiome(biome) || biome.isIn(BiomeTags.IS_JUNGLE) || biome.matchesKey(BiomeKeys.DRIPSTONE_CAVES))
-            result.put("aqua", takeAspect("aqua", 80));
-            
-        if (biome.isIn(BiomeTags.IS_END)) result.put("vacuos", takeAspect("vacuos", 80)); // outer lands
-        if (biome == BiomeKeys.DARK_FOREST || biome == BiomeKeys.DEEP_DARK) result.put("spiritus", takeAspect("spiritus", 80));
+        if (biome.isIn(BiomeTags.IS_NETHER) && randomize(1, 2)) 
+            result.put("ignis", takeAspect("ignis", 120));
+        if (biome.matchesKey(BiomeKeys.MUSHROOM_FIELDS) && randomize(1, 2)) 
+            result.put("ordo", takeAspect("ordo", 140));
+        if ((biome.isIn(BiomeTags.IS_MOUNTAIN) || isFrozenBiome(biome) || biome.isIn(BiomeTags.IS_JUNGLE)) && 
+            randomize(1, 2))
+            result.put("ordo", takeAspect("ordo", 100));
+        if ((biome.isIn(BiomeTags.IS_BEACH) || biome.matchesKey(BiomeKeys.DESERT) || biome.isIn(BiomeTags.IS_BADLANDS)) && 
+            randomize(1, 2)) 
+            result.put("terra", takeAspect("terra", 80));
+        if (biome.isIn(BiomeTags.IS_FOREST) && randomize(1, 2)) 
+            result.put("terra", takeAspect("terra", 120));
+        if (isSwampBiome(biome) && randomize(1, 2)) 
+            result.put("perditio", takeAspect("perditio", 120));
+        if ((biome.matchesKey(BiomeKeys.SNOWY_PLAINS) || biome.isIn(BiomeTags.IS_SAVANNA) || biome.isIn(BiomeTags.IS_HILL) || 
+            biome.isIn(BiomeTags.IS_BADLANDS) || biome.isIn(BiomeTags.IS_NETHER) || biome.matchesKey(BiomeKeys.DESERT)) && 
+            randomize(1, 2)) 
+            result.put("perditio", takeAspect("perditio", 80)); // tainted land
+        if (biome.isIn(BiomeTags.IS_HILL) && randomize(1, 2)) 
+            result.put("aer", takeAspect("aer", 120));
+        if (biome.isIn(BiomeTags.IS_MOUNTAIN) && randomize(1, 2)) 
+            result.put("aer", takeAspect("aer", 100));
+        if ((biome.isIn(BiomeTags.IS_SAVANNA) || isPlainsBiome(biome)) && randomize(1, 2)) 
+            result.put("aer", takeAspect("aer", 80));
+        if ((biome.isIn(BiomeTags.IS_JUNGLE) || biome.matchesKey(BiomeKeys.LUSH_CAVES)) && randomize(1, 2))
+            result.put("herba", takeAspect("herba", 100));
+        if (biome.isIn(BiomeTags.IS_RIVER) && randomize(1, 2)) 
+            result.put("aqua", takeAspect("aqua", 100));
+        if ((isSwampBiome(biome) || biome.isIn(BiomeTags.IS_JUNGLE) || biome.matchesKey(BiomeKeys.DRIPSTONE_CAVES)) && 
+            randomize(1, 2)) result.put("aqua", takeAspect("aqua", 80));
+        if (biome.isIn(BiomeTags.IS_END) && randomize(1, 2)) 
+            result.put("vacuos", takeAspect("vacuos", 80)); // outer lands
+        if ((biome.matchesKey(BiomeKeys.DARK_FOREST) || biome.matchesKey(BiomeKeys.DEEP_DARK)) && randomize(1, 2)) 
+            result.put("spiritus", takeAspect("spiritus", 80));
              // eerie, outer lands
-        if (biome == BiomeKeys.DEEP_DARK) {
-            result.put("tenebrae", takeAspect("tenebrae", 100));
-            result.put("mortuus", takeAspect("mortuus", 50));
+        if (biome.matchesKey(BiomeKeys.DEEP_DARK)) {
+            if (randomize(1, 2)) result.put("tenebrae", takeAspect("tenebrae", 100));
+            if (randomize(1, 2)) result.put("mortuus", takeAspect("mortuus", 50));
         }
-
         if (type.auraNodeType == "hungry") result.put("fames", takeAspect("fames", 20));
         if (type.auraNodeType == "pure") {
             if (randomize(1, 1)) result.put("ordo", takeAspect("ordo", 20));
@@ -228,7 +255,7 @@ Magical 	--- 	--- 	Tainted land, eerie, outer lands, magical forest
     }
     private void selectNodeType() {
         RegistryEntry<Biome> biome = world.getBiome(pos);
-        if (biome == BiomeKeys.DEEP_DARK && randomize(4, 1)) {
+        if (biome.matchesKey(BiomeKeys.DEEP_DARK) && randomize(4, 1)) {
             type = AuraNodeType.getType("sinister");
             return;
         }
@@ -241,5 +268,38 @@ Magical 	--- 	--- 	Tainted land, eerie, outer lands, magical forest
         );
         type = AuraNodeType.getType(selectableTypes.get(new Random().nextInt(selectableTypes.size())));
         if (type.auraNodeType == "hungry" && type.auraNodeSubType == "fading") type.auraNodeType = "unstable";
+    }
+
+    public static int aspectRegenTick = 0, unstableTick = 0;
+
+    public static <E extends BlockEntity> void tick(World world, BlockPos pos, BlockState state, E e) {
+        if (world.isClient) return;
+        if (!(e instanceof AuraNodeEntity)) return;
+        AuraNodeEntity entity = (AuraNodeEntity) e;
+        if (entity.type == null) entity.generateNode();
+
+        if (entity.type.auraNodeSubType != "fading" && entity.type.regeneration) {
+            for (Map.Entry<String, Aspect> aspect : entity.aspects.entrySet()) 
+                if (aspect.getValue().amount < entity.maxRegenPerAspect)
+                    if (aspectRegenTick >= 600) {
+                        aspectRegenTick = -1;
+                        if (aspect.getValue().amount < entity.maxRegenPerAspect) aspect.getValue().amount++;
+                    }
+            aspectRegenTick++;
+        }
+        if (entity.type.auraNodeType == "unstable") {
+            if (unstableTick == 100) {
+                Aspect asp = SMLRegistry.getAspect((String) (entity.aspects.keySet().toArray()[new Random().nextInt(entity.aspects.size())]));
+                asp.amount = 1;
+                if (randomize(1, 1)) {
+                    entity.drainAspect(asp);
+                    // drop aspect as orb
+                }
+                unstableTick = -1;
+            }
+            unstableTick++;
+        }
+
+        markDirty(world, pos, state);
     }
 }
