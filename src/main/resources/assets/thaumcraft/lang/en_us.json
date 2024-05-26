@@ -1,3 +1,17 @@
 {
-    "item.thaumcraft.shard_balanced": "Balanced Shard"
+    "item.thaumcraft.shard_balanced": "Balanced Shard",
+    "item.thaumcraft.salis_mundus": "Salis Mundus",
+    
+    "block.thaumcraft.arcane_workbench": "Arcane Workbench",
+    "block.thaumcraft.auro_node": "Aura Node",
+
+    "msg.thaumcraft.not_unlocked": "It seems that you don't know how to do that!",
+    "msg.thaumcraft.crystal_dreem_quest_start": "",
+    "msg.thaumcraft.crystal_dreem_quest_end": "",
+
+    "text.thaumcraft.crystal_dreem_quest_book_page1": "",
+    "text.thaumcraft.crystal_dreem_quest_book_page2": "",
+    "text.thaumcraft.crystal_dreem_quest_book_page3": "",
+
+    "itemGroup.thaumcraft.group": "ThaumCraft"
 }

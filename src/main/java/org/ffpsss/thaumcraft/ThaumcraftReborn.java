@@ -16,5 +16,7 @@ public class ThaumcraftReborn implements ModInitializer {
 		ThaumicAspects.generateAspects();
 
 		ThaumicItems.registerAll();
+		ThaumicBlocks.registerAll();
+		ThaumicMultiblock.generateAll();
 	}
 }
