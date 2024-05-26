@@ -1,36 +1,17 @@
 package org.ffpsss.thaumcraft.block;
 
-import java.util.HashMap;
-import java.util.Map;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.BlockWithEntity;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.util.math.BlockPos;
 
-import org.ffpsss.sml.magic.Aspect;
-import org.ffpsss.sml.magic.AspectStorage;
-import org.ffpsss.thaumcraft.data.AuraNodeType;
-
-import net.minecraft.block.Block;
-
-public class AuraNode extends Block implements AspectStorage {
-    private final Map<String, Aspect> aspects = new HashMap<>();
-    public AuraNodeType type = AuraNodeType.getType("normal");
-
+public class AuraNode extends BlockWithEntity {
     public AuraNode(Settings settings) {
         super(settings);
     }
 
-    public AuraNode setNodeType(AuraNodeType type) {
-        this.type = type;
-        return this;
-    }
-
     @Override
-    public void addAspect(Aspect arg0) {
-        if (aspects.containsKey(arg0.ID)) aspects.get(arg0.ID).amount += arg0.amount;
-        else aspects.put(arg0.ID, arg0);
+    public BlockEntity createBlockEntity(BlockPos arg0, BlockState arg1) {
+        return new AuraNodeEntity(arg0, arg1);
     }
-    @Override
-    public Aspect drainAspect(Aspect arg0) {
-        if (aspects.containsKey(arg0.ID)) aspects.get(arg0.ID).amount -= arg0.amount;
-    }
-    @Override public Map<String, Aspect> getAspects() { return aspects; }
-    
 }

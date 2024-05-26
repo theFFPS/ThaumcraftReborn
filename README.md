@@ -1,2 +1,2 @@
 # ThaumcraftReborn
-Port of Thaumcraft to Fabric using SML
+Port of Thaumcraft to Fabric
