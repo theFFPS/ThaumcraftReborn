@@ -5,6 +5,8 @@ build/
 out/
 classes/
 .CODE
+testInstall.sh
+applySML.sh
 
 # eclipse
 
