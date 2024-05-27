@@ -7,7 +7,7 @@ import org.ffpsss.thaumcraft.api.entity.EntityDataSaver;
 
 public class EntityAspectUtil {
     public static void entityGiveAspect(EntityDataSaver player, Aspect aspect) {
-        NbtCompound nbt = player.getPersistentData();
+        NbtCompound nbt = player.thaumcraftReborn$getPersistentData();
         if (!nbt.contains("aspects", 10)) {
             NbtCompound aspectsCompound = new NbtCompound();
             aspectsCompound.putInt(aspect.metadata.ID, aspect.count);
@@ -19,7 +19,7 @@ public class EntityAspectUtil {
         }
     }
     public static Aspect entityTakeAspect(EntityDataSaver player, Aspect aspect) {
-        NbtCompound nbt = player.getPersistentData();
+        NbtCompound nbt = player.thaumcraftReborn$getPersistentData();
         if (nbt.contains("aspects", 10)) {
             NbtCompound aspectsCompound = new NbtCompound();
             int overFlow = 0;
@@ -35,12 +35,12 @@ public class EntityAspectUtil {
         return aspect;
     }
     public static boolean hasAspect(EntityDataSaver player, String aspectId) {
-        NbtCompound nbt = player.getPersistentData();
+        NbtCompound nbt = player.thaumcraftReborn$getPersistentData();
         if (!nbt.contains("aspects", 10)) return false;
         return nbt.getCompound("aspects").contains(aspectId);
     }
     public static boolean hasAspect(EntityDataSaver player, Aspect aspect) {
-        NbtCompound nbt = player.getPersistentData();
+        NbtCompound nbt = player.thaumcraftReborn$getPersistentData();
         if (!nbt.contains("aspects", 10)) return false;
         return nbt.getCompound("aspects").getInt(aspect.metadata.ID) >= aspect.count;
     }
