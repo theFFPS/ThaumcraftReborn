@@ -2,39 +2,38 @@
 	"schemaVersion": 1,
 	"id": "thaumcraft",
 	"version": "${version}",
-	"name": "ThaumcraftReborn",
-	"description": "Port of Thaumcraft to Fabric using SML",
+	"name": "ThaumCraft Reborn",
+	"description": "ThaumCraft port to FabricMC",
 	"authors": [
 		"40fpsss"
 	],
 	"contact": {
-		"homepage": "https://github.com/theffps/ThaumcraftReborn",
-		"sources": "https://github.com/theffps/ThaumcraftReborn"
+		"homepage": "https://github.com/theFFPS/ThaumCraftReborn",
+		"sources": "https://github.com/theFFPS/ThaumCraftReborn"
 	},
 	"license": "GPLv3",
 	"icon": "assets/thaumcraft/icon.png",
 	"environment": "*",
 	"entrypoints": {
 		"main": [
-			"org.ffpsss.thaumcraft.ThaumcraftReborn"
+			"org.ffpsss.thaumcraft.ThaumCraftReborn"
 		],
 		"client": [
-			"org.ffpsss.thaumcraft.ThaumcraftRebornClient"
+			"org.ffpsss.thaumcraft.ThaumCraftRebornClient"
 		]
 	},
 	"mixins": [
-		"thaumcraftreborn.mixins.json",
+		"thaumcraft.mixins.json",
 		{
-			"config": "thaumcraftreborn.client.mixins.json",
+			"config": "thaumcraft.client.mixins.json",
 			"environment": "client"
 		}
 	],
 	"depends": {
-		"fabricloader": "*",
-		"minecraft": ">=1.19.2",
-		"java": ">=17",
-		"fabric-api": "*",
-		"sml": "*"
+		"fabricloader": ">=0.15.11",
+		"minecraft": "~1.20.6",
+		"java": ">=21",
+		"fabric-api": "*"
 	},
 	"suggests": {
 	}
