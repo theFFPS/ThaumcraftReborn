@@ -11,5 +11,7 @@ public class ThaumCraftReborn implements ModInitializer {
 	@Override
 	public void onInitialize() {
 		LOGGER.info("Hello Fabric world!");
+
+		ThaumicAspects.generateAspects();
 	}
 }
