@@ -1,0 +1,28 @@
+{
+    "parent": "thaumcraft:block/arcane_workbench",
+    "display": {
+        "thirdperson_righthand": {
+            "rotation": [85, 0, 0],
+            "scale": [0.4, 0.4, 0.4]
+        },
+        "thirdperson_lefthand": {
+            "rotation": [85, 0, 0],
+            "scale": [0.4, 0.4, 0.4]
+        },
+        "firstperson_righthand": {
+            "rotation": [-17, 0, 0],
+            "scale": [0.4, 0.4, 0.4]
+        },
+        "firstperson_lefthand": {
+            "rotation": [-17, 0, 0],
+            "scale": [0.4, 0.4, 0.4]
+        },
+        "ground": {
+            "scale": [0.25, 0.25, 0.25]
+        },
+        "gui": {
+            "rotation": [30, 225, 0],
+            "scale": [0.6, 0.6, 0.6]
+        }
+    }
+}

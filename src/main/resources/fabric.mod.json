@@ -20,6 +20,9 @@
 		],
 		"client": [
 			"org.ffpsss.thaumcraft.ThaumCraftRebornClient"
+		],
+		"fabric-datagen": [
+			"org.ffpsss.thaumcraft.ThaumicDatagen"
 		]
 	},
 	"mixins": [

@@ -1,10 +1,10 @@
 package org.ffpsss.thaumcraft;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.registry.tag.TagKey;
 import org.ffpsss.thaumcraft.api.aspect.Aspect;
 import org.ffpsss.thaumcraft.api.aspect.AspectMetadata;
 
@@ -14,6 +14,13 @@ public class ThaumicAspects {
     public static final List<CompoundAspect> COMPOUND_ASPECTS = new ArrayList<>();
 
     public static void generateAspects() {
+        generateCompoundAspects();
+        Aspect.register(new AspectMetadata("aer", "Aer", new Identifier("thaumcraft", "aspect_aer")));
+        Aspect.register(new AspectMetadata("aqua", "Aqua", new Identifier("thaumcraft", "aspect_aqua")));
+        Aspect.register(new AspectMetadata("terra", "Terra", new Identifier("thaumcraft", "aspect_terra")));
+        Aspect.register(new AspectMetadata("ordo", "Ordo", new Identifier("thaumcraft", "aspect_ordo")));
+        Aspect.register(new AspectMetadata("perditio", "Perditio", new Identifier("thaumcraft", "aspect_perditio")));
+        Aspect.register(new AspectMetadata("ignis", "Ignis", new Identifier("thaumcraft", "aspect_ignis")));
         for (CompoundAspect aspect : COMPOUND_ASPECTS)
             Aspect.register(
                 new AspectMetadata(
@@ -63,19 +70,10 @@ public class ThaumicAspects {
         COMPOUND_ASPECTS.add(new CompoundAspect("Tutamen", "instrumentum", "terra"));
         COMPOUND_ASPECTS.add(new CompoundAspect("Vacuos", "aer", "perditio"));
         COMPOUND_ASPECTS.add(new CompoundAspect("Venenum", "aqua", "perditio"));
-        COMPOUND_ASPECTS.add(new CompoundAspect("Victus", "aqua", "terra"));
         COMPOUND_ASPECTS.add(new CompoundAspect("Vinculum", "motus", "perditio"));
         COMPOUND_ASPECTS.add(new CompoundAspect("Vitium", "perditio", "praecantatio"));
         COMPOUND_ASPECTS.add(new CompoundAspect("Vitreus", "ordo", "terra"));
         COMPOUND_ASPECTS.add(new CompoundAspect("Volatus", "aer", "motus"));
-        COMPOUND_ASPECTS.add(new CompoundAspect("Exubitor", "alienis", "mortuus"));
-        COMPOUND_ASPECTS.add(new CompoundAspect("Desidia", "vinculum", "spiritus"));
-        COMPOUND_ASPECTS.add(new CompoundAspect("Gula", "fames", "vacuos"));
-        COMPOUND_ASPECTS.add(new CompoundAspect("Infernus", "ignis", "praecantatio"));
-        COMPOUND_ASPECTS.add(new CompoundAspect("Invidia", "sensus", "fames"));
-        COMPOUND_ASPECTS.add(new CompoundAspect("Ira", "ignis", "telum"));
-        COMPOUND_ASPECTS.add(new CompoundAspect("Luxuria", "corpus", "fames"));
-        COMPOUND_ASPECTS.add(new CompoundAspect("Superbia", "volatus", "vacuos"));
     }
 
     public static List<Aspect> disassemleAspect(Aspect aspect) {
@@ -84,5 +82,36 @@ public class ThaumicAspects {
             Aspect.getAspectById(aspect.metadata.components.get(0), aspect.count),
             Aspect.getAspectById(aspect.metadata.components.get(1), aspect.count)
         );
+    }
+
+    public static Map<Item, List<Aspect>> ITEM_ASPECTS = new HashMap<>();
+    public static Map<TagKey<Item>, List<Aspect>> ITEM_TAGS_ASPECTS = new HashMap<>();
+
+    public static List<Aspect> getItemAspects(ItemStack item) {
+        int multiplier = item.getCount();
+
+        Map<String, Integer> aspects = new HashMap<>();
+
+        for (Map.Entry<Item, List<Aspect>> entry : ITEM_ASPECTS.entrySet())
+            if (item.isOf(entry.getKey())) for (Aspect aspect : entry.getValue()) {
+                if (aspects.containsKey(aspect.metadata.ID)) {
+                    Integer currV = aspects.get(aspect.metadata.ID);
+                    aspects.remove(aspect.metadata.ID);
+                    aspects.put(aspect.metadata.ID, aspect.count + currV);
+                } else aspects.put(aspect.metadata.ID, aspect.count);
+            }
+        for (Map.Entry<TagKey<Item>, List<Aspect>> entry : ITEM_TAGS_ASPECTS.entrySet())
+            if (item.isIn(entry.getKey())) for (Aspect aspect : entry.getValue()) {
+                if (aspects.containsKey(aspect.metadata.ID)) {
+                    Integer currV = aspects.get(aspect.metadata.ID);
+                    aspects.remove(aspect.metadata.ID);
+                    aspects.put(aspect.metadata.ID, aspect.count + currV);
+                } else aspects.put(aspect.metadata.ID, aspect.count);
+            }
+
+        List<Aspect> result = new ArrayList<>();
+        for (Map.Entry<String, Integer> entry : aspects.entrySet())
+            result.add(Aspect.getAspectById(entry.getKey(), entry.getValue() * multiplier));
+        return result;
     }
 }
