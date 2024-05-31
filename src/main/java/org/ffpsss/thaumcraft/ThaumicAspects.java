@@ -15,18 +15,18 @@ public class ThaumicAspects {
 
     public static void generateAspects() {
         generateCompoundAspects();
-        Aspect.register(new AspectMetadata("aer", "Aer", new Identifier("thaumcraft", "aspect_aer")));
-        Aspect.register(new AspectMetadata("aqua", "Aqua", new Identifier("thaumcraft", "aspect_aqua")));
-        Aspect.register(new AspectMetadata("terra", "Terra", new Identifier("thaumcraft", "aspect_terra")));
-        Aspect.register(new AspectMetadata("ordo", "Ordo", new Identifier("thaumcraft", "aspect_ordo")));
-        Aspect.register(new AspectMetadata("perditio", "Perditio", new Identifier("thaumcraft", "aspect_perditio")));
-        Aspect.register(new AspectMetadata("ignis", "Ignis", new Identifier("thaumcraft", "aspect_ignis")));
+        Aspect.register(new AspectMetadata("aer", "Aer", new Identifier("thaumcraft", "aer")));
+        Aspect.register(new AspectMetadata("aqua", "Aqua", new Identifier("thaumcraft", "aqua")));
+        Aspect.register(new AspectMetadata("terra", "Terra", new Identifier("thaumcraft", "terra")));
+        Aspect.register(new AspectMetadata("ordo", "Ordo", new Identifier("thaumcraft", "ordo")));
+        Aspect.register(new AspectMetadata("perditio", "Perditio", new Identifier("thaumcraft", "perditio")));
+        Aspect.register(new AspectMetadata("ignis", "Ignis", new Identifier("thaumcraft", "ignis")));
         for (CompoundAspect aspect : COMPOUND_ASPECTS)
             Aspect.register(
                 new AspectMetadata(
                     aspect.name.toLowerCase(), 
                     aspect.name, 
-                    new Identifier("thaumcraft", "aspect_" + aspect.name.toLowerCase()), 
+                    new Identifier("thaumcraft", aspect.name.toLowerCase()),
                     Arrays.asList(aspect.idComp1, aspect.idComp2)
                 )
             );
@@ -74,14 +74,6 @@ public class ThaumicAspects {
         COMPOUND_ASPECTS.add(new CompoundAspect("Vitium", "perditio", "praecantatio"));
         COMPOUND_ASPECTS.add(new CompoundAspect("Vitreus", "ordo", "terra"));
         COMPOUND_ASPECTS.add(new CompoundAspect("Volatus", "aer", "motus"));
-    }
-
-    public static List<Aspect> disassemleAspect(Aspect aspect) {
-        if (aspect.metadata.components.isEmpty()) return Collections.singletonList(aspect);
-        return Arrays.asList(
-            Aspect.getAspectById(aspect.metadata.components.get(0), aspect.count),
-            Aspect.getAspectById(aspect.metadata.components.get(1), aspect.count)
-        );
     }
 
     public static Map<Item, List<Aspect>> ITEM_ASPECTS = new HashMap<>();

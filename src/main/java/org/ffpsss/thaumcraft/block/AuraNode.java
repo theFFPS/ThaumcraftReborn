@@ -1,10 +1,7 @@
 package org.ffpsss.thaumcraft.block;
 
 import com.mojang.serialization.MapCodec;
-import net.minecraft.block.BlockRenderType;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.BlockWithEntity;
-import net.minecraft.block.Waterloggable;
+import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
@@ -34,7 +31,7 @@ public class AuraNode extends BlockWithEntity implements Waterloggable {
 
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-        return (world1, pos, state1, blockEntity) -> ((AuraNodeEntity) blockEntity).tick(world1, pos, state1, (AuraNodeEntity) blockEntity);
+        return (world1, pos, state1, blockEntity) -> AuraNodeEntity.tick(world1, pos, state1, (AuraNodeEntity) blockEntity);
     }
 
     @Override

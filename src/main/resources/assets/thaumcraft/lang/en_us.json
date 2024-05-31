@@ -10,6 +10,9 @@
     
     "block.thaumcraft.arcane_workbench": "Arcane Workbench",
     "block.thaumcraft.auranode": "Aura Node",
+    "block.thaumcraft.shimmerleaf": "Shimmerleaf",
+    "block.thaumcraft.cinderpearl": "Cinderpearl",
+    "block.thaumcraft.vishroom": "Vishroom",
 
     "msg.thaumcraft.not_unlocked": "It seems that you don't know how to do that!",
     "msg.thaumcraft.crystal_dreem_quest_start": "Your fingers tingle strangely as you handle this crystal. What does that mean? Maybe some rest will inspire you.",
@@ -19,6 +22,8 @@
     "text.thaumcraft.crystal_dreem_quest_book_page1": "I had the strangest dream last night.\n\nIn the dream, I took three of those strange crystals I've been finding and ground them with a handful of redstone in a bowl, using a piece of flint.",
     "text.thaumcraft.crystal_dreem_quest_book_page2": "The crystals had to be of different types, buf if I did it properly then the result was a strange, glowing dust.\n\nIn the dream, I took the dust and sprinkled it on a bookshelf, but the dream ended before I saw what happened.",
     "text.thaumcraft.crystal_dreem_quest_book_page3": "I wonder, should I do what the dream showed?\n\nI have the impression the dust was going to reveal something wonderous, but dangerous.",
+
+    "gui.thaumcraft.arcane_table": "Arcane Workbench",
 
     "itemGroup.thaumcraft.group": "ThaumCraft Reborn"
 }

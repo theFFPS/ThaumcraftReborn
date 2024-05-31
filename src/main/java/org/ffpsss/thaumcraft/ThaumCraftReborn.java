@@ -28,6 +28,8 @@ public class ThaumCraftReborn implements ModInitializer {
 		ThaumicBlocks.registerAll();
 		ThaumicItems.registerAll();
 
+		ThaumicScreens.registerAll();
+
 		GROUP = Registry.register(
 				Registries.ITEM_GROUP,
 				new Identifier("thaumcraft", "group"),
@@ -39,13 +41,17 @@ public class ThaumCraftReborn implements ModInitializer {
 							entries.add(ThaumicItems.AURANODE);
 							entries.add(ThaumicItems.SALIS_MUNDUS);
 							entries.add(ThaumicItems.BALANCED_SHARD);
-
 							entries.add(ThaumicItems.IGNIS_SHARD);
 							entries.add(ThaumicItems.AER_SHARD);
 							entries.add(ThaumicItems.AQUA_SHARD);
 							entries.add(ThaumicItems.TERRA_SHARD);
 							entries.add(ThaumicItems.PERDITIO_SHARD);
 							entries.add(ThaumicItems.ORDO_SHARD);
+							entries.add(ThaumicItems.QUICKSILVER);
+							entries.add(ThaumicItems.QUICKSILVER_DROP);
+							entries.add(ThaumicItems.VISHROOM);
+							entries.add(ThaumicItems.SHIMMERLEAF);
+							entries.add(ThaumicItems.CINDERPEARL);
 						}))
 						.build()
 		);

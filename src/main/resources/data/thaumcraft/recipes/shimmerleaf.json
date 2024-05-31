@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredient": {
+    "item": "thaumcraft:cinderpearl"
+  },
+  "result": {
+    "id": "thaumcraft:quicksilver"
+  }
+}

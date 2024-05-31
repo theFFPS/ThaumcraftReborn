@@ -15,7 +15,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.ffpsss.thaumcraft.api.entity.EntityDataSaver;
 import org.ffpsss.thaumcraft.api.util.AnimationUtil;
-import org.ffpsss.thaumcraft.api.util.BlockPlacerUtil;
+import org.ffpsss.thaumcraft.api.util.WorldUtil;
 import org.ffpsss.thaumcraft.api.util.ThaumonomiconUtil;
 
 public class SalisMundus extends Item {
@@ -33,7 +33,7 @@ public class SalisMundus extends Item {
                 if (ThaumonomiconUtil.hasFeature((EntityDataSaver)context.getPlayer(), "thaumcraft_obtain_shards")) {
                     AnimationUtil.playSalisMundusAnimation(world, pos);
                     // TODO: SPAWN THAUMONOMICON
-                    BlockPlacerUtil.placeBlock(pos, Blocks.AIR.getDefaultState(), world);
+                    WorldUtil.placeBlock(pos, Blocks.AIR.getDefaultState(), world);
                     if (!ThaumonomiconUtil.hasFeature((EntityDataSaver) context.getPlayer(), "thaumcraft_bookshelf"))
                         ThaumonomiconUtil.unlockFeature((EntityDataSaver) context.getPlayer(), "thaumcraft_bookshelf");
                     context.getPlayer().setStackInHand(context.getHand(), ItemStack.EMPTY);
@@ -41,7 +41,7 @@ public class SalisMundus extends Item {
             } else if (world.getBlockState(pos).isOf(Blocks.CRAFTING_TABLE)) {
                 if (ThaumonomiconUtil.hasFeature((EntityDataSaver)context.getPlayer(), "thaumcraft_bookshelf")) {
                     AnimationUtil.playSalisMundusAnimation(world, pos);
-                    BlockPlacerUtil.placeBlock(pos, ThaumicBlocks.ARCANE_TABLE.getDefaultState(), world);
+                    WorldUtil.placeBlock(pos, ThaumicBlocks.ARCANE_TABLE.getDefaultState(), world);
                     if (!ThaumonomiconUtil.hasFeature((EntityDataSaver) context.getPlayer(), "arcane_table"))
                         ThaumonomiconUtil.unlockFeature((EntityDataSaver)context.getPlayer(), "arcane_table");
                     context.getPlayer().setStackInHand(context.getHand(), ItemStack.EMPTY);
