@@ -5,6 +5,7 @@ import java.util.*;
 import net.minecraft.entity.*;
 import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.registry.RegistryWrapper;
@@ -13,7 +14,6 @@ import net.minecraft.registry.tag.BiomeTags;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.util.TypeFilter;
 import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Vec3d;
 import org.ffpsss.thaumcraft.ThaumicAspects;
 import org.ffpsss.thaumcraft.ThaumicBlocks;
 import org.ffpsss.thaumcraft.api.aspect.Aspect;
@@ -51,7 +51,6 @@ public class AuraNodeEntity extends BlockEntity implements AspectStorage {
     public Map<String, Aspect> getAspects() {
         return aspects;
     }
-
     @Override
     public Aspect drainAspect(String ID, int amount) {
         if (!aspects.containsKey(ID)) return Aspect.getAspectById(ID, amount);
@@ -62,12 +61,10 @@ public class AuraNodeEntity extends BlockEntity implements AspectStorage {
         if (overFlow < 0) aspects.put(ID, aspect);
         return Aspect.getAspectById(ID, overFlow);
     }
-
     @Override
     public Aspect addAspect(String ID, int amount) {
         return Aspect.getAspectById(ID, amount); // reject every aspect (can't be recharged)
     }
-
     @Override
     protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
         super.writeNbt(nbt, registryLookup);
@@ -86,7 +83,6 @@ public class AuraNodeEntity extends BlockEntity implements AspectStorage {
         }
         nbt.put("aspects", aspectStorage);
     }
-
     private void generateNode() {
         List<Integer> probableMaxVis = new ArrayList<>();
         List<String>  probableAspects = new ArrayList<>();
@@ -240,7 +236,6 @@ public class AuraNodeEntity extends BlockEntity implements AspectStorage {
             }
         } else type.auraNodeSubType = "none";
     }
-
     @Override
     protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
         super.readNbt(nbt, registryLookup);
@@ -257,16 +252,13 @@ public class AuraNodeEntity extends BlockEntity implements AspectStorage {
             }
         } else generateNode();
     }
-
     public static boolean randomize(int falsePossibilities, int truePossibilities) {
         List<Boolean> res = new ArrayList<>();
         for (int i = 0; i < falsePossibilities; i++) res.add(false);
         for (int i = 0; i < truePossibilities; i++) res.add(true);
         return res.get(new Random().nextInt(res.size()));
     }
-
     public static int aspectRegenTick = 0, unstableTaintTick = 0, sinisterHungryPureTick = 0, taintTick = 0, stableTick = 0, hungryDamageTick = 0;
-
     public static void tick(World world, BlockPos pos, BlockState state, AuraNodeEntity entity) {
         if (world.isClient) return;
         if (entity.type == null) entity.generateNode();
@@ -393,41 +385,52 @@ public class AuraNodeEntity extends BlockEntity implements AspectStorage {
             sinisterHungryPureTick++;
         }
         if (Objects.equals(entity.type.auraNodeType, "hungry")) {
-            if (sinisterHungryPureTick >= 50) {
+            int hungryTime = 50;
+            if (entity.aspects.get("fames").count >= 30) hungryTime = 45;
+            else if (entity.aspects.get("fames").count >= 20) hungryTime = 40;
+            if (sinisterHungryPureTick >= hungryTime) {
                 List<BlockPos> blocks = getAwailableBlocks(pos, (int) Blocks.OBSIDIAN.getHardness(), world);
-                if (!blocks.isEmpty()) world.breakBlock(blocks.get(new Random().nextInt(blocks.size())), true);
+                BlockPos position = blocks.get(new Random().nextInt(blocks.size()));
+                List<Aspect> aspects = ThaumicAspects.getItemAspects(new ItemStack(world.getBlockState(position).getBlock().asItem(), 1));
+                for (Aspect aspect : aspects)
+                    if (entity.aspects.containsKey(aspect.metadata.ID)) {
+                        Aspect tmpAsp = entity.aspects.get(aspect.metadata.ID);
+                        entity.aspects.remove(aspect.metadata.ID);
+                        tmpAsp.count += aspect.count;
+                        if (tmpAsp.count > entity.maxForAspect.get(aspect.metadata.ID)) {
+                            if (randomize(2 * entity.maxForAspect.get(aspect.metadata.ID), 1)) {
+                                int tmpMax = entity.maxForAspect.get(aspect.metadata.ID);
+                                entity.maxForAspect.remove(aspect.metadata.ID);
+                                tmpMax++;
+                                entity.maxForAspect.put(aspect.metadata.ID, tmpMax);
+                            }
+                            tmpAsp.count = entity.maxForAspect.get(aspect.metadata.ID);
+                        }
+                        entity.aspects.put(aspect.metadata.ID, tmpAsp);
+                    }
+                if (!blocks.isEmpty()) world.breakBlock(position, false);
                 sinisterHungryPureTick = -1;
             }
 
             List<Entity> entities = world.getEntitiesByType(
                     TypeFilter.instanceOf(Entity.class),
                     new Box(
-                            pos.getX() + 15, pos.getY() + 15, pos.getZ() + 15,
-                            pos.getX() - 15, pos.getY() - 15, pos.getZ() - 15
+                            pos.getX() + 2, pos.getY() + 2, pos.getZ() + 2,
+                            pos.getX() - 2, pos.getY() - 2, pos.getZ() - 2
                     ),
                     EntityPredicates.VALID_ENTITY
             );
             for (Entity e : entities) {
                 if (e instanceof PlayerEntity) if (((PlayerEntity) e).isCreative() || e.isSpectator()) continue;
-                BlockPos posEntity = e.getBlockPos();
-                // Calculate distance
-                int xDist = posEntity.getX() - pos.getX();
-                int yDist = posEntity.getY() - pos.getY();
-                int zDist = posEntity.getZ() - pos.getZ();
-                if (xDist < 0) xDist = -xDist;
-                if (yDist < 0) yDist = -yDist;
-                if (zDist < 0) zDist = -zDist;
-
-                double distance = Math.sqrt((xDist*xDist) + (yDist*yDist) + (zDist*zDist));
-                if (distance <= 1d) {
-                    if (e instanceof LivingEntity) if (hungryDamageTick >= 10) {
-                        e.teleport(pos.getX(), pos.getY(), pos.getZ());
-                        e.damage(e.getDamageSources().outOfWorld(), 3);
-                        hungryDamageTick = -1;
-                    }
-                    if (e instanceof ItemEntity) {
-                        List<Aspect> aspects = ThaumicAspects.getItemAspects(((ItemEntity) e).getStack());
-                        for (Aspect aspect : aspects) if (entity.aspects.containsKey(aspect.metadata.ID)) {
+                if (e instanceof LivingEntity) if (hungryDamageTick >= 5) {
+                    e.teleport(pos.getX(), pos.getY(), pos.getZ());
+                    e.damage(e.getDamageSources().outOfWorld(), 5);
+                    hungryDamageTick = -1;
+                }
+                if (e instanceof ItemEntity) {
+                    List<Aspect> aspects = ThaumicAspects.getItemAspects(((ItemEntity) e).getStack());
+                    for (Aspect aspect : aspects)
+                        if (entity.aspects.containsKey(aspect.metadata.ID)) {
                             Aspect tmpAsp = entity.aspects.get(aspect.metadata.ID);
                             entity.aspects.remove(aspect.metadata.ID);
                             tmpAsp.count += aspect.count;
@@ -442,21 +445,7 @@ public class AuraNodeEntity extends BlockEntity implements AspectStorage {
                             }
                             entity.aspects.put(aspect.metadata.ID, tmpAsp);
                         }
-                        e.discard();
-                    }
-                } else if (hungryDamageTick >= 5) {
-                    if (distance <= 1.5d) e.move(MovementType.SELF, new Vec3d(
-                            pos.getX(), pos.getY(), pos.getZ()
-                    ));
-                    if (distance <= 6d) e.move(MovementType.SELF, new Vec3d(
-                            pos.getX(), pos.getY(), pos.getZ()
-                    ));
-                    else if (distance <= 12d) e.move(MovementType.SELF, new Vec3d(
-                            pos.getX(), pos.getY(), pos.getZ()
-                    ));
-                    else if (distance <= 15d) e.move(MovementType.SELF, new Vec3d(
-                            pos.getX(), pos.getY(), pos.getZ()
-                    ));
+                    e.discard();
                 }
             }
             hungryDamageTick++;
@@ -468,32 +457,31 @@ public class AuraNodeEntity extends BlockEntity implements AspectStorage {
 
         markDirty(world, pos, state);
     }
-    private static List<BlockPos> getBlocksInArea(BlockPos pos1, BlockPos pos2, BlockPos posMain) {
+    private static List<BlockPos> getBlocksInArea(BlockPos pos1, BlockPos pos2, BlockPos posMain, World world, int maxHardness) {
         List<BlockPos> result = new ArrayList<>();
         for (int x = pos1.getX(); x <= pos2.getX(); x++)
             for (int y = pos1.getY(); y <= pos2.getY(); y++)
                 for (int z = pos1.getZ(); z <= pos2.getZ(); z++) {
                     BlockPos pos = new BlockPos(x, y, z);
                     if (pos.equals(posMain)) continue;
+                    if (world.getBlockState(pos).isOf(Blocks.AIR) || world.getBlockState(pos).isOf(Blocks.VOID_AIR) ||
+                            world.getBlockState(pos).isOf(Blocks.CAVE_AIR) || world.getBlockState(pos).getBlock().getHardness() >= maxHardness ||
+                            world.getBlockState(pos).getBlock().getHardness() < 0) continue;
                     result.add(pos);
                 }
         return result;
     }
     private static List<BlockPos> getAwailableBlocks(BlockPos pos, int maxHardness, World world) {
-        List<BlockPos> result = new ArrayList<>(), tmp = new ArrayList<>();
+        List<BlockPos> result = new ArrayList<>();
         for (int i = 1; i <= 15; i++) {
-            tmp.addAll(getBlocksInArea(
+            result.addAll(getBlocksInArea(
                     new BlockPos(pos.getX() - i, pos.getY() - i, pos.getZ() - i),
                     new BlockPos(pos.getX() + i, pos.getY() + i, pos.getZ() + i),
-                    pos
+                    pos,
+                    world,
+                    maxHardness
             ));
-            if (!tmp.isEmpty()) break;
-        }
-        for (BlockPos position : tmp) {
-            if (world.getBlockState(position).isOf(Blocks.AIR) || world.getBlockState(position).isOf(Blocks.VOID_AIR) ||
-                    world.getBlockState(position).isOf(Blocks.CAVE_AIR) || world.getBlockState(position).getBlock().getHardness() >= maxHardness ||
-                    world.getBlockState(position).getBlock().getHardness() < 0) continue;
-            result.add(position);
+            if (!result.isEmpty()) break;
         }
         return result;
     }
