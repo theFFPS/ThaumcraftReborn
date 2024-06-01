@@ -13,6 +13,8 @@
     "block.thaumcraft.shimmerleaf": "Shimmerleaf",
     "block.thaumcraft.cinderpearl": "Cinderpearl",
     "block.thaumcraft.vishroom": "Vishroom",
+    "block.thaumcraft.quicksilver": "Quicksilver",
+    "block.thaumcraft.quicksilver_drop": "Quicksilver Drop",
 
     "msg.thaumcraft.not_unlocked": "It seems that you don't know how to do that!",
     "msg.thaumcraft.crystal_dreem_quest_start": "Your fingers tingle strangely as you handle this crystal. What does that mean? Maybe some rest will inspire you.",

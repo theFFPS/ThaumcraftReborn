@@ -9,7 +9,7 @@ import net.minecraft.util.Identifier;
 public class ThaumicTags {
 
     public static class Blocks {
-        public static final TagKey<Block> SALIS_MUNDUS_USAGE = createTag("salis_mundus_usage");
+        public static final TagKey<Block> WAND_RECHARGE = createTag("wand_recharge");
 
         private static TagKey<Block> createTag(String name) {
             return TagKey.of(RegistryKeys.BLOCK, new Identifier("thaumcraft", name));
