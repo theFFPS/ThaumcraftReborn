@@ -1,0 +1,2 @@
+./gradlew runDatagen
+./gradlew build

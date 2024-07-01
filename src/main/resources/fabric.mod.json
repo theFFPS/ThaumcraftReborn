@@ -19,7 +19,7 @@
 			"org.ffpsss.thaumcraft.ThaumCraftReborn"
 		],
 		"client": [
-			"org.ffpsss.thaumcraft.ThaumCraftRebornClient"
+			"org.ffpsss.thaumcraft.ThaumcraftRebornClient"
 		],
 		"fabric-datagen": [
 			"org.ffpsss.thaumcraft.ThaumicDatagen"
