@@ -258,7 +258,8 @@ public class AuraNodeEntity extends BlockEntity implements AspectStorage {
         for (int i = 0; i < truePossibilities; i++) res.add(true);
         return res.get(new Random().nextInt(res.size()));
     }
-    public static int aspectRegenTick = 0, unstableTaintTick = 0, sinisterHungryPureTick = 0, taintTick = 0, stableTick = 0, hungryDamageTick = 0;
+    public static int aspectRegenTick = 0, unstableTaintTick = 0, sinisterHungryPureTick = 0, taintTick = 0, stableTick = 0, 
+                      hungryDamageTick = 0, bullyTick = 0;
     public static void tick(World world, BlockPos pos, BlockState state, AuraNodeEntity entity) {
         if (world.isClient) return;
         if (entity.type == null) entity.generateNode();
@@ -385,9 +386,14 @@ public class AuraNodeEntity extends BlockEntity implements AspectStorage {
             sinisterHungryPureTick++;
         }
         if (Objects.equals(entity.type.auraNodeType, "hungry")) {
-            int hungryTime = 50;
-            if (entity.aspects.get("fames").count >= 30) hungryTime = 45;
-            else if (entity.aspects.get("fames").count >= 20) hungryTime = 40;
+            int hungryTime = 50, eatDistance = 2;
+            if (entity.aspects.get("fames").count >= 30) {
+                hungryTime = 45;
+                eatDistance = 3;
+            } else if (entity.aspects.get("fames").count >= 20) {
+                hungryTime = 40;
+                eatDistance = 4;
+            }
             if (sinisterHungryPureTick >= hungryTime) {
                 List<BlockPos> blocks = getAwailableBlocks(pos, (int) Blocks.OBSIDIAN.getHardness(), world);
                 BlockPos position = blocks.get(new Random().nextInt(blocks.size()));
@@ -415,8 +421,8 @@ public class AuraNodeEntity extends BlockEntity implements AspectStorage {
             List<Entity> entities = world.getEntitiesByType(
                     TypeFilter.instanceOf(Entity.class),
                     new Box(
-                            pos.getX() + 2, pos.getY() + 2, pos.getZ() + 2,
-                            pos.getX() - 2, pos.getY() - 2, pos.getZ() - 2
+                            pos.getX() + eatDistance, pos.getY() + eatDistance, pos.getZ() + eatDistance,
+                            pos.getX() - eatDistance, pos.getY() - eatDistance, pos.getZ() - eatDistance
                     ),
                     EntityPredicates.VALID_ENTITY
             );
@@ -452,10 +458,91 @@ public class AuraNodeEntity extends BlockEntity implements AspectStorage {
             sinisterHungryPureTick++;
         }
         if (entity.aspects.isEmpty()) WorldUtil.placeBlock(pos, Blocks.AIR.getDefaultState(), world);
+        
+        if (bullyTick == 100) {
+            List<AuraNodeEntity> selectedNodes = new ArrayList<>();
+            for (int x = entity.getPos().getX() - 4; x <= entity.getPos().getX() + 4; x++)
+                for (int y = entity.getPos().getY() - 4; y <= entity.getPos().getY() + 4; y++)
+                    for (int z = entity.getPos().getZ() - 4; z <= entity.getPos().getZ() + 4; z++) {
+                        if (new BlockPos(x, y, z) == entity.getPos()) continue;
+                        if (world.getBlockState(new BlockPos(x, y, z)).isOf(ThaumicBlocks.AURANODE)) selectedNodes.add(entity);
+                    }
+            AuraNodeEntity node = selectedNodes.get(new Random().nextInt(selectedNodes.size()));
+            if (entity.stable && !entity.advancedStable && node.stable) {
+                if (entity.type == AuraNodeType.getType("hungry")) {
+                    if (entity.totalAspectWeight() > node.totalAspectWeight()) {
+                        Aspect aspectSelected = (Aspect)node.aspects.values().toArray()[new Random().nextInt(node.aspects.size())];
+                        if (entity.aspects.containsKey(aspectSelected.metadata.ID)) {
+                            entity.aspects.remove(aspectSelected.metadata.ID);
+                            aspectSelected.count++;
+                            entity.aspects.put(aspectSelected.metadata.ID, aspectSelected);
+                            if (aspectSelected.count > entity.maxForAspect.get(aspectSelected.metadata.ID)) {
+                                entity.maxForAspect.remove(aspectSelected.metadata.ID);
+                                if (randomize(1, 2)) 
+                                    entity.maxForAspect.put(aspectSelected.metadata.ID, aspectSelected.count);
+                                else {
+                                    entity.aspects.remove(aspectSelected.metadata.ID);
+                                    aspectSelected.count -= 2;
+                                    entity.aspects.put(aspectSelected.metadata.ID, aspectSelected);
+                                    entity.maxForAspect.put(aspectSelected.metadata.ID, aspectSelected.count);
+                                }
+                                if (randomize(99, 1) && entity.type.auraNodeSubType == "pale")
+                                    entity.type.auraNodeSubType = "normal";
+                            }
+                        } else {
+                            if (randomize(1, 2)) {
+                                aspectSelected.count = 1;
+                                entity.aspects.put(aspectSelected.metadata.ID, aspectSelected);
+                                entity.maxForAspect.put(aspectSelected.metadata.ID, 1);
+                            }
+                            if (randomize(99, 1) && entity.type.auraNodeSubType == "pale")
+                                entity.type.auraNodeSubType = "normal";
+                        }
+                    } 
+                } else {
+                    if (entity.totalAspectWeight() > node.totalAspectWeight() && node.type != AuraNodeType.getType("hungry")) {
+                        Aspect aspectSelected = (Aspect)node.aspects.values().toArray()[new Random().nextInt(node.aspects.size())];
+                        if (entity.aspects.containsKey(aspectSelected.metadata.ID)) {
+                            entity.aspects.remove(aspectSelected.metadata.ID);
+                            aspectSelected.count++;
+                            entity.aspects.put(aspectSelected.metadata.ID, aspectSelected);
+                            if (aspectSelected.count > entity.maxForAspect.get(aspectSelected.metadata.ID)) {
+                                entity.maxForAspect.remove(aspectSelected.metadata.ID);
+                                if (randomize(1, 2)) 
+                                    entity.maxForAspect.put(aspectSelected.metadata.ID, aspectSelected.count);
+                                else {
+                                    entity.aspects.remove(aspectSelected.metadata.ID);
+                                    aspectSelected.count -= 2;
+                                    entity.aspects.put(aspectSelected.metadata.ID, aspectSelected);
+                                    entity.maxForAspect.put(aspectSelected.metadata.ID, aspectSelected.count);
+                                }
+                                if (randomize(99, 1) && entity.type.auraNodeSubType == "pale")
+                                    entity.type.auraNodeSubType = "normal";
+                            }
+                        } else {
+                            if (randomize(1, 2)) {
+                                aspectSelected.count = 1;
+                                entity.aspects.put(aspectSelected.metadata.ID, aspectSelected);
+                                entity.maxForAspect.put(aspectSelected.metadata.ID, 1);
+                            }
+                            if (randomize(99, 1) && entity.type.auraNodeSubType == "pale")
+                                entity.type.auraNodeSubType = "normal";
+                        }
+                    }
+                }
+            }
+            bullyTick = -1;
+        }
 
         taintTick++;
+        bullyTick++;
 
         markDirty(world, pos, state);
+    }
+    public long totalAspectWeight() {
+        long result = 0;
+        for (Aspect aspect : aspects.values()) result += aspect.count;
+        return result;
     }
     private static List<BlockPos> getBlocksInArea(BlockPos pos1, BlockPos pos2, BlockPos posMain, World world, int maxHardness) {
         List<BlockPos> result = new ArrayList<>();
@@ -471,6 +558,20 @@ public class AuraNodeEntity extends BlockEntity implements AspectStorage {
                 }
         return result;
     }
+    private static boolean hasNodeUnbreakableBlocksInArea(BlockPos pos1, BlockPos pos2, BlockPos posMain, World world, int maxHardness) {
+        List<BlockPos> result = new ArrayList<>();
+        for (int x = pos1.getX(); x <= pos2.getX(); x++)
+            for (int y = pos1.getY(); y <= pos2.getY(); y++)
+                for (int z = pos1.getZ(); z <= pos2.getZ(); z++) {
+                    BlockPos pos = new BlockPos(x, y, z);
+                    if (pos.equals(posMain)) continue;
+                    if (world.getBlockState(pos).isOf(Blocks.AIR) || world.getBlockState(pos).isOf(Blocks.VOID_AIR) ||
+                            world.getBlockState(pos).isOf(Blocks.CAVE_AIR) || world.getBlockState(pos).getBlock().getHardness() >= maxHardness ||
+                            world.getBlockState(pos).getBlock().getHardness() < 0) return true;
+                    result.add(pos);
+                }
+        return false;
+    }
     private static List<BlockPos> getAwailableBlocks(BlockPos pos, int maxHardness, World world) {
         List<BlockPos> result = new ArrayList<>();
         for (int i = 1; i <= 15; i++) {
@@ -481,7 +582,13 @@ public class AuraNodeEntity extends BlockEntity implements AspectStorage {
                     world,
                     maxHardness
             ));
-            if (!result.isEmpty()) break;
+            if (hasNodeUnbreakableBlocksInArea(
+                new BlockPos(pos.getX() - i, pos.getY() - i, pos.getZ() - i),
+                new BlockPos(pos.getX() + i, pos.getY() + i, pos.getZ() + i),
+                pos,
+                world,
+                maxHardness
+            ) || !result.isEmpty()) break;
         }
         return result;
     }
