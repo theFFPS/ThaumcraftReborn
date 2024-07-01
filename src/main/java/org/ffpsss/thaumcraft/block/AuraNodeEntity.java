@@ -474,6 +474,7 @@ public class AuraNodeEntity extends BlockEntity implements AspectStorage {
                 if (entity.type == AuraNodeType.getType("hungry")) {
                     if (entity.totalAspectWeight() > node.totalAspectWeight()) {
                         Aspect aspectSelected = (Aspect)node.aspects.values().toArray()[new Random().nextInt(node.aspects.size())];
+                        node.drainAspect(aspectSelected.metadata.ID, 1);
                         if (entity.aspects.containsKey(aspectSelected.metadata.ID)) {
                             entity.aspects.remove(aspectSelected.metadata.ID);
                             aspectSelected.count++;
@@ -554,25 +555,12 @@ public class AuraNodeEntity extends BlockEntity implements AspectStorage {
                     BlockPos pos = new BlockPos(x, y, z);
                     if (pos.equals(posMain)) continue;
                     if (world.getBlockState(pos).isOf(Blocks.AIR) || world.getBlockState(pos).isOf(Blocks.VOID_AIR) ||
-                            world.getBlockState(pos).isOf(Blocks.CAVE_AIR) || world.getBlockState(pos).getBlock().getHardness() >= maxHardness ||
+                            world.getBlockState(pos).isOf(Blocks.CAVE_AIR) || world.getBlockState(pos).isOf(ThaumicBlocks.AURANODE)
+                             || world.getBlockState(pos).getBlock().getHardness() >= maxHardness ||
                             world.getBlockState(pos).getBlock().getHardness() < 0) continue;
                     result.add(pos);
                 }
         return result;
-    }
-    private static boolean hasNodeUnbreakableBlocksInArea(BlockPos pos1, BlockPos pos2, BlockPos posMain, World world, int maxHardness) {
-        List<BlockPos> result = new ArrayList<>();
-        for (int x = pos1.getX(); x <= pos2.getX(); x++)
-            for (int y = pos1.getY(); y <= pos2.getY(); y++)
-                for (int z = pos1.getZ(); z <= pos2.getZ(); z++) {
-                    BlockPos pos = new BlockPos(x, y, z);
-                    if (pos.equals(posMain)) continue;
-                    if (world.getBlockState(pos).isOf(Blocks.AIR) || world.getBlockState(pos).isOf(Blocks.VOID_AIR) ||
-                            world.getBlockState(pos).isOf(Blocks.CAVE_AIR) || world.getBlockState(pos).getBlock().getHardness() >= maxHardness ||
-                            world.getBlockState(pos).getBlock().getHardness() < 0) return true;
-                    result.add(pos);
-                }
-        return false;
     }
     private static List<BlockPos> getAwailableBlocks(BlockPos pos, int maxHardness, World world) {
         List<BlockPos> result = new ArrayList<>();
@@ -584,13 +572,7 @@ public class AuraNodeEntity extends BlockEntity implements AspectStorage {
                     world,
                     maxHardness
             ));
-            if (hasNodeUnbreakableBlocksInArea(
-                new BlockPos(pos.getX() - i, pos.getY() - i, pos.getZ() - i),
-                new BlockPos(pos.getX() + i, pos.getY() + i, pos.getZ() + i),
-                pos,
-                world,
-                maxHardness
-            ) || !result.isEmpty()) break;
+            if (!result.isEmpty()) break;
         }
         return result;
     }
