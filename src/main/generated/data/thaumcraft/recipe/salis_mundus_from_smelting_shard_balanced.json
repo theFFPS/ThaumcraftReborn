@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:smelting",
+  "category": "misc",
+  "cookingtime": 200,
+  "experience": 0.7,
+  "group": "salis_mundus",
+  "ingredient": {
+    "item": "thaumcraft:shard_balanced"
+  },
+  "result": {
+    "id": "thaumcraft:salis_mundus"
+  }
+}

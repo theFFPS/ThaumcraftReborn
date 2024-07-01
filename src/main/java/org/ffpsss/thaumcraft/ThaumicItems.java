@@ -31,7 +31,7 @@ public class ThaumicItems {
     public static Item SHIMMERLEAF;
 
     public static Item createItem(String ID, Item item) {
-        return Registry.register(Registries.ITEM, new Identifier("thaumcraft", ID), item);
+        return Registry.register(Registries.ITEM, Identifier.of("thaumcraft", ID), item);
     }
 
     public static void registerAll() {
@@ -235,7 +235,7 @@ public class ThaumicItems {
                 Aspect.getAspectById("metallum", 12),
                 Aspect.getAspectById("potentia", 1)
         ));
-        ThaumicAspects.ITEM_TAGS_ASPECTS.put(ItemTags.MUSIC_DISCS, Arrays.asList(
+        ThaumicAspects.ITEM_TAGS_ASPECTS.put(ItemTags.CREEPER_DROP_MUSIC_DISCS, Arrays.asList(
                 Aspect.getAspectById("aer", 4),
                 Aspect.getAspectById("aqua", 4),
                 Aspect.getAspectById("lucrum", 4),

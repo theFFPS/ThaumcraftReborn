@@ -12,7 +12,7 @@ public class ThaumicTags {
         public static final TagKey<Block> WAND_RECHARGE = createTag("wand_recharge");
 
         private static TagKey<Block> createTag(String name) {
-            return TagKey.of(RegistryKeys.BLOCK, new Identifier("thaumcraft", name));
+            return TagKey.of(RegistryKeys.BLOCK, Identifier.of("thaumcraft", name));
         }
     }
     public static class Items {
@@ -20,7 +20,7 @@ public class ThaumicTags {
         public static final TagKey<Item> SHARDS = createTag("shards");
 
         private static TagKey<Item> createTag(String name) {
-            return TagKey.of(RegistryKeys.ITEM, new Identifier("thaumcraft", name));
+            return TagKey.of(RegistryKeys.ITEM, Identifier.of("thaumcraft", name));
         }
     }
 }

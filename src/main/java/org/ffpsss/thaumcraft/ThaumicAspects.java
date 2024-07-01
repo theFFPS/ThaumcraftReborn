@@ -15,18 +15,18 @@ public class ThaumicAspects {
 
     public static void generateAspects() {
         generateCompoundAspects();
-        Aspect.register(new AspectMetadata("aer", "Aer", new Identifier("thaumcraft", "aer")));
-        Aspect.register(new AspectMetadata("aqua", "Aqua", new Identifier("thaumcraft", "aqua")));
-        Aspect.register(new AspectMetadata("terra", "Terra", new Identifier("thaumcraft", "terra")));
-        Aspect.register(new AspectMetadata("ordo", "Ordo", new Identifier("thaumcraft", "ordo")));
-        Aspect.register(new AspectMetadata("perditio", "Perditio", new Identifier("thaumcraft", "perditio")));
-        Aspect.register(new AspectMetadata("ignis", "Ignis", new Identifier("thaumcraft", "ignis")));
+        Aspect.register(new AspectMetadata("aer", "Aer", Identifier.of("thaumcraft", "aer")));
+        Aspect.register(new AspectMetadata("aqua", "Aqua", Identifier.of("thaumcraft", "aqua")));
+        Aspect.register(new AspectMetadata("terra", "Terra", Identifier.of("thaumcraft", "terra")));
+        Aspect.register(new AspectMetadata("ordo", "Ordo", Identifier.of("thaumcraft", "ordo")));
+        Aspect.register(new AspectMetadata("perditio", "Perditio", Identifier.of("thaumcraft", "perditio")));
+        Aspect.register(new AspectMetadata("ignis", "Ignis", Identifier.of("thaumcraft", "ignis")));
         for (CompoundAspect aspect : COMPOUND_ASPECTS)
             Aspect.register(
                 new AspectMetadata(
                     aspect.name.toLowerCase(), 
                     aspect.name, 
-                    new Identifier("thaumcraft", aspect.name.toLowerCase()),
+                    Identifier.of("thaumcraft", aspect.name.toLowerCase()),
                     Arrays.asList(aspect.idComp1, aspect.idComp2)
                 )
             );

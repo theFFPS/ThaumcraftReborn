@@ -32,7 +32,7 @@ public class ThaumCraftReborn implements ModInitializer {
 
 		GROUP = Registry.register(
 				Registries.ITEM_GROUP,
-				new Identifier("thaumcraft", "group"),
+				Identifier.of("thaumcraft", "group"),
 				FabricItemGroup.builder()
 						.displayName(Text.translatable("itemGroup.thaumcraft.group"))
 						.icon(() -> new ItemStack(Items.BIRCH_BOAT)) // placeholder

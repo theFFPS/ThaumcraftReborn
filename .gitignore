@@ -4,7 +4,6 @@
 build/
 out/
 classes/
-testInstall.sh
 
 # eclipse
 
@@ -22,6 +21,7 @@ testInstall.sh
 .settings/
 .vscode/
 bin/
+localInstallScript.sh
 .classpath
 .project
 

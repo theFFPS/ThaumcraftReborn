@@ -423,7 +423,7 @@ public class AuraNodeEntity extends BlockEntity implements AspectStorage {
             for (Entity e : entities) {
                 if (e instanceof PlayerEntity) if (((PlayerEntity) e).isCreative() || e.isSpectator()) continue;
                 if (e instanceof LivingEntity) if (hungryDamageTick >= 5) {
-                    e.teleport(pos.getX(), pos.getY(), pos.getZ());
+                    e.setPosition(pos.getX(), pos.getY(), pos.getZ());
                     e.damage(e.getDamageSources().outOfWorld(), 5);
                     hungryDamageTick = -1;
                 }

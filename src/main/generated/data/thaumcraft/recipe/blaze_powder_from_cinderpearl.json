@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "group": "cinderpearl",
+  "ingredients": [
+    {
+      "item": "thaumcraft:cinderpearl"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "minecraft:blaze_powder"
+  }
+}

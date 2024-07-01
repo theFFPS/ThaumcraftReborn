@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "group": "shimmerleaf",
+  "ingredients": [
+    {
+      "item": "thaumcraft:shimmerleaf"
+    }
+  ],
+  "result": {
+    "count": 1,
+    "id": "thaumcraft:quicksilver"
+  }
+}

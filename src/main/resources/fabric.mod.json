@@ -2,7 +2,7 @@
 	"schemaVersion": 1,
 	"id": "thaumcraft",
 	"version": "${version}",
-	"name": "ThaumCraft Reborn",
+	"name": "Thaumcraft Reborn",
 	"description": "ThaumCraft port to FabricMC",
 	"authors": [
 		"40fpsss"
@@ -39,7 +39,7 @@
 	],
 	"depends": {
 		"fabricloader": ">=0.15.11",
-		"minecraft": "~1.20.6",
+		"minecraft": "~1.21",
 		"java": ">=21",
 		"fabric-api": "*",
 		"terrablender": "*"

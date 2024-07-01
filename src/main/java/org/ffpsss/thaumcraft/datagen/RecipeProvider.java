@@ -26,9 +26,9 @@ public class RecipeProvider extends FabricRecipeProvider {
         offerShapelessRecipe(exporter, ThaumicItems.QUICKSILVER, ThaumicItems.SHIMMERLEAF, "shimmerleaf", 1);
         offerShapelessRecipe(exporter, ThaumicItems.QUICKSILVER_DROP, ThaumicItems.QUICKSILVER, "quicksilver_drop", 1);
 
-        ShapedRecipeJsonBuilder.create(RecipeCategory.MISC, ThaumicItems.QUICKSILVER, 1)
-                .pattern("DDD").pattern("DDD").pattern("DDD")
-                .input('D', ThaumicItems.QUICKSILVER_DROP)
-                .offerTo(exporter, new Identifier(getRecipeName(ThaumicItems.QUICKSILVER)));
+        // ShapedRecipeJsonBuilder.create(RecipeCategory.MISC, ThaumicItems.QUICKSILVER, 1)
+        //         .pattern("DDD").pattern("DDD").pattern("DDD")
+        //         .input('D', ThaumicItems.QUICKSILVER_DROP)
+        //         .offerTo(exporter, Identifier.of(getRecipeName(ThaumicItems.QUICKSILVER)));
     }
 }

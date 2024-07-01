@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_shard_balanced": {
+      "conditions": {
+        "items": [
+          {
+            "items": "thaumcraft:shard_balanced"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "minecraft:salis_mundus_from_smelting_shard_balanced"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_shard_balanced"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "minecraft:salis_mundus_from_smelting_shard_balanced"
+    ]
+  }
+}

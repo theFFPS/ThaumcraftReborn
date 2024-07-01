@@ -1,6 +1,5 @@
 package org.ffpsss.thaumcraft;
 
-import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
@@ -26,20 +25,20 @@ public class ThaumicBlocks {
 
     public static Block VISHROOM =
             createBlock("vishroom",
-                    new FlowerBlock(StatusEffects.NAUSEA, 10f, FabricBlockSettings.copy(Blocks.ALLIUM).noCollision().nonOpaque()));
+                    new FlowerBlock(StatusEffects.NAUSEA, 10f, AbstractBlock.Settings.copy(Blocks.ALLIUM).noCollision().nonOpaque()));
     public static Block SHIMMERLEAF =
-            createBlock("shimmerleaf", new TorchBlock(ParticleTypes.SOUL_FIRE_FLAME, FabricBlockSettings.copy(Blocks.ALLIUM).noCollision().nonOpaque()));
+            createBlock("shimmerleaf", new TorchBlock(ParticleTypes.SOUL_FIRE_FLAME, AbstractBlock.Settings.copy(Blocks.ALLIUM).noCollision().nonOpaque()));
     public static Block CINDERPEARL =
-            createBlock("cinderpearl", new TorchBlock(ParticleTypes.SMOKE, FabricBlockSettings.copy(Blocks.ALLIUM).noCollision().nonOpaque()));
+            createBlock("cinderpearl", new TorchBlock(ParticleTypes.SMOKE, AbstractBlock.Settings.copy(Blocks.ALLIUM).noCollision().nonOpaque()));
 
     public static Block createBlock(String ID, Block block) {
-        return Registry.register(Registries.BLOCK, new Identifier("thaumcraft", ID), block);
+        return Registry.register(Registries.BLOCK, Identifier.of("thaumcraft", ID), block);
     }
     public static Item generateItem(String ID, BlockItem blockItem) {
-        return Registry.register(Registries.ITEM, new Identifier("thaumcraft", ID), blockItem);
+        return Registry.register(Registries.ITEM, Identifier.of("thaumcraft", ID), blockItem);
     }
     public static <T extends BlockEntity> BlockEntityType<? extends T> generateBlockEntity(String ID, BlockEntityType<? extends T> entity) {
-        return Registry.register(Registries.BLOCK_ENTITY_TYPE, new Identifier("thaumcraft", ID), entity);
+        return Registry.register(Registries.BLOCK_ENTITY_TYPE, Identifier.of("thaumcraft", ID), entity);
     }
 
     public static void registerAll() {

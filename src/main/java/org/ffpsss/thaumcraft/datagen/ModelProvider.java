@@ -5,6 +5,8 @@ import net.fabricmc.fabric.api.datagen.v1.provider.FabricModelProvider;
 import net.minecraft.data.client.BlockStateModelGenerator;
 import net.minecraft.data.client.ItemModelGenerator;
 import net.minecraft.data.client.Models;
+
+import org.ffpsss.thaumcraft.ThaumicBlocks;
 import org.ffpsss.thaumcraft.ThaumicItems;
 
 public class ModelProvider extends FabricModelProvider {
@@ -14,7 +16,6 @@ public class ModelProvider extends FabricModelProvider {
 
     @Override
     public void generateBlockStateModels(BlockStateModelGenerator blockStateModelGenerator) {
-
     }
 
     @Override
