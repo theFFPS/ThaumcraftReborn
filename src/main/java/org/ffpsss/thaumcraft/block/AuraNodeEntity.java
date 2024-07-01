@@ -396,25 +396,27 @@ public class AuraNodeEntity extends BlockEntity implements AspectStorage {
             }
             if (sinisterHungryPureTick >= hungryTime) {
                 List<BlockPos> blocks = getAwailableBlocks(pos, (int) Blocks.OBSIDIAN.getHardness(), world);
-                BlockPos position = blocks.get(new Random().nextInt(blocks.size()));
-                List<Aspect> aspects = ThaumicAspects.getItemAspects(new ItemStack(world.getBlockState(position).getBlock().asItem(), 1));
-                for (Aspect aspect : aspects)
-                    if (entity.aspects.containsKey(aspect.metadata.ID)) {
-                        Aspect tmpAsp = entity.aspects.get(aspect.metadata.ID);
-                        entity.aspects.remove(aspect.metadata.ID);
-                        tmpAsp.count += aspect.count;
-                        if (tmpAsp.count > entity.maxForAspect.get(aspect.metadata.ID)) {
-                            if (randomize(2 * entity.maxForAspect.get(aspect.metadata.ID), 1)) {
-                                int tmpMax = entity.maxForAspect.get(aspect.metadata.ID);
-                                entity.maxForAspect.remove(aspect.metadata.ID);
-                                tmpMax++;
-                                entity.maxForAspect.put(aspect.metadata.ID, tmpMax);
+                if (blocks.size() > 0) {
+                    BlockPos position = blocks.get(new Random().nextInt(blocks.size()));
+                    List<Aspect> aspects = ThaumicAspects.getItemAspects(new ItemStack(world.getBlockState(position).getBlock().asItem(), 1));
+                    for (Aspect aspect : aspects)
+                        if (entity.aspects.containsKey(aspect.metadata.ID)) {
+                            Aspect tmpAsp = entity.aspects.get(aspect.metadata.ID);
+                            entity.aspects.remove(aspect.metadata.ID);
+                            tmpAsp.count += aspect.count;
+                            if (tmpAsp.count > entity.maxForAspect.get(aspect.metadata.ID)) {
+                                if (randomize(2 * entity.maxForAspect.get(aspect.metadata.ID), 1)) {
+                                    int tmpMax = entity.maxForAspect.get(aspect.metadata.ID);
+                                    entity.maxForAspect.remove(aspect.metadata.ID);
+                                    tmpMax++;
+                                    entity.maxForAspect.put(aspect.metadata.ID, tmpMax);
+                                }
+                                tmpAsp.count = entity.maxForAspect.get(aspect.metadata.ID);
                             }
-                            tmpAsp.count = entity.maxForAspect.get(aspect.metadata.ID);
+                            entity.aspects.put(aspect.metadata.ID, tmpAsp);
                         }
-                        entity.aspects.put(aspect.metadata.ID, tmpAsp);
-                    }
-                if (!blocks.isEmpty()) world.breakBlock(position, false);
+                    if (!blocks.isEmpty()) world.breakBlock(position, false);
+                }
                 sinisterHungryPureTick = -1;
             }
 
